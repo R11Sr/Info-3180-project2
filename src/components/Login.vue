@@ -52,10 +52,7 @@ export default{
 
 <style>
 .container-outlined{
-    /* border-style: solid; */
-    /* border-radius: 1em; */
-    /* border-width: .15em; */
-    /* border-color: gray; */
+
      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 </style>
