@@ -30,6 +30,21 @@ const router = createRouter({
       name: 'explore',
       component: ExploreView
     },
+    {
+      path: '/registration',
+      name: 'registration',
+      component: () => import('../views/RegistrationView.vue')
+    },
+    {
+      path: '/cars/new',
+      name: 'new',
+      component: () =>import('../views/NewPostView.vue')
+    },
+    {
+      path: '/cars/details',
+      name: 'details',
+      component: () =>import('../views/DetailsView.vue')
+    }
     // {
     //   path: '/user/useriD', //make u_id dynamic
     //   name: 'user_id',
