@@ -7,8 +7,8 @@
 
               <h1>{{ message }}</h1>
               <p class="text-muted">
-                United Auto Sales provides the  fastest, esiest andmost user friendly way
-                to buy or sell cars online. Find a Great Proce on the Vehicle You Want.
+                United Auto Sales provides the  fastest, easiest and most user friendly way
+                to buy or sell cars online. Find a great price on the vehicle you want.
               </p>
               <div class="button-group d-flex">
                 <div class="pe-3 page-nav">

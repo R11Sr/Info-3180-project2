@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import ExploreView from '../views/ExploreView.vue'
+import UserView from '../views/UserView.vue'
 
 
 const router = createRouter({
@@ -30,11 +31,11 @@ const router = createRouter({
       name: 'explore',
       component: ExploreView
     },
-    // {
-    //   path: '/user/useriD', //make u_id dynamic
-    //   name: 'user_id',
-    //   component: UserView
-    // }
+    {
+      path: '/user', //make u_id dynamic
+      name: 'user',
+      component: UserView
+    }
   ]
 })
 
