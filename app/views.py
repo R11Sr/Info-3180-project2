@@ -7,6 +7,8 @@ This file creates your application.
 import datetime
 from unittest import result
 
+
+
 from app import app, db
 from flask import render_template, request, jsonify, send_file,flash,url_for,redirect,g
 from flask_login import current_user, login_user,login_required, logout_user
@@ -15,6 +17,7 @@ from app.forms import *
 from app.models import *
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash
+from flask_wtf.csrf import generate_csrf
 
 
 
@@ -38,12 +41,13 @@ def register():
             location = form.location.data
             biography= form.biography.data
             photo = form.photo.data
-            filename= secure_filename(photo.fiename)
+            filename= secure_filename(photo.filename)
             photo.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
-            if Users.query.filter_by(email=email).first() is not None or Users.query.filter_by(username=username) is not None:
-                return jsonify({"result": "User already has an account"}),400
-            else:
+            '''if Users.query.filter_by(email=email).first() == None or Users.query.filter_by(username=username) == None:
+                return jsonify({"result": "User already has an account","user":Users.query.filter_by(email=email).first()}),400'''
+            print(fullname)
+            if True:
                 userRecord = Users( 
                     username=username,
                     password=password,
@@ -52,7 +56,7 @@ def register():
                     location = location,
                     biography = biography,
                     photo = filename,
-                    date_joined = datetime.now()
+                    date_joined = datetime.date.today()
                 )
                 db.session.add(userRecord)
                 db.session.commit()
@@ -134,7 +138,7 @@ def cars():
                 car_type=car_type,
                 price= price,
                 photo= filename,
-                user_id= flask_login.current_user.id
+                user_id= current_user.id
                 #ADD USER ID
             )
 
@@ -215,7 +219,7 @@ def carsFavorite(car_id):
     if car is not None:
         info= Favourites(
             car_id= car_id,
-            user_id= flask_login.current_user.id 
+            user_id= current_user.id 
         )
         db.session.add(info)
         db.session.commit()
@@ -330,7 +334,9 @@ def userFavoritse(user_id):
 
 
 
-
+@app.route('/api/csrf-token', methods=['GET'])
+def get_csrf():
+    return jsonify({'csrf_token': generate_csrf()})
 
 
 
