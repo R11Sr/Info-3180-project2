@@ -117,7 +117,7 @@ def cars():
         if form.validate_on_submit():
             make= form.make.data
             model= form.model.data
-            color= form.color.data
+            colour= form.colour.data
             year= form.year.data
             price= form.price.data
             car_type= form.Car_Type.data
@@ -125,14 +125,13 @@ def cars():
             description=form.description.data
             photo= form.photo.data
             filename= secure_filename(photo.filename)
-
-            photo.save(os.path.join(app.config["UPLOAD_FOLDER", filename]))
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
             car= Cars(
                 description=description,
                 make=make,
                 model= model,
-                color=color,
+                colour=colour,
                 year=year,
                 transmission=transmission,
                 car_type=car_type,

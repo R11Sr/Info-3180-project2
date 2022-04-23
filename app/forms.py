@@ -28,10 +28,10 @@ class ExploreForm(FlaskForm):
 class AddNewCarForm(FlaskForm):
     make = StringField('Make', validators=[DataRequired()])
     model = StringField('Model', validators=[DataRequired()])
-    color = StringField('Colour', validators=[DataRequired()])
+    colour = StringField('Colour', validators=[DataRequired()])
     year = StringField('Year', validators=[DataRequired()])
     price = StringField('Price', validators=[DataRequired()])
-    Car_Type = SelectField("Car Type", choices=['SUV'])
-    transmission = SelectField('Transmission', choices=['Automatic'])
+    Car_Type = StringField("Car Type", validators=[DataRequired()])
+    transmission = StringField('Transmission', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     photo = FileField('Upload Photo', validators=[FileRequired(), FileAllowed(['jpg','png'])])
