@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash
 
 #favourites
 class Favourites(db.Model):
-    __tablename__ = 'Favourites'
+    __tablename__ = 'favourites'
 
     id = db.Column(db.Integer, primary_key=True)
     car_id = db.Column(db.Integer)
@@ -21,7 +21,7 @@ class Favourites(db.Model):
 
 #cars model
 class Cars(db.Model):
-    __tablename__ = 'Cars'
+    __tablename__ = 'cars'
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(1024))
@@ -52,7 +52,7 @@ class Cars(db.Model):
 
 #users model
 class Users(db.Model):
-    __tablename__ = 'Users'
+    __tablename__ = 'users'
  
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(1024), unique=True)
@@ -64,10 +64,10 @@ class Users(db.Model):
     photo = db.Column(db.String(255))
     date_joined = db.Column(db.DateTime(timezone=True))
 
-    def __init__(self, username, password, name, email, location, biography, photo, date_joined):
+    def __init__(self, username, password, fullname, email, location, biography, photo, date_joined):
         self.username = username
         self.password = generate_password_hash(password, method='pbkdf2:sha256')
-        self.name = name
+        self.fullname = fullname
         self.email = email
         self.location = location
         self.biography = biography
@@ -90,4 +90,4 @@ class Users(db.Model):
             return str(self.id)  # python 3 support
 
     def __repr__(self):
-        return '<User %r, %r>' % (self.id, self.name)
+        return '<User %r, %r>' % (self.id, self.fullname)
