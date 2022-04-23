@@ -7,7 +7,9 @@
     "preview": "vite preview --port 5050"
   },
   "dependencies": {
+    "@smartweb/vue-flash-message": "^0.6.10",
     "vue": "^3.2.31",
+    "vue-flash-message": "^0.7.2",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {

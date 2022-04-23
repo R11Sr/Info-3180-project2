@@ -7,7 +7,7 @@ This file creates your application.
 from datetime import date,datetime
 from unittest import result
 
-from app import app, db
+from app import app, db, login_manager
 from flask import render_template, request, jsonify, send_file,flash,url_for,redirect,g
 from flask_login import current_user, login_user,login_required, logout_user
 import os
@@ -81,7 +81,7 @@ def login():
         username = form.username.data
         password = form.password.data
 
-        user = Users.query.filter_by(username=username).first()
+        user = Users.query.filter_by(username = username).first()
 
         if user is not None:
             if check_password_hash(user.password,password):
@@ -349,6 +349,11 @@ def get_csrf():
 ###
 # The functions below should be applicable to all Flask apps.
 ###
+
+
+@login_manager.user_loader
+def load_user(id):
+    return Users.query.get(int(id))
 
 # Here we define a function to collect form errors from Flask-WTF
 # which we can later use
