@@ -35,6 +35,11 @@ const router = createRouter({
       path: '/user', //make u_id dynamic
       name: 'user',
       component: UserView
+    },
+    {
+      path: '/registration',
+      name: 'registration',
+      component: () => import('../views/RegistrationView.vue')
     }
   ]
 })

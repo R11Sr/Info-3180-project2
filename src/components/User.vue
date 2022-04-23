@@ -2,7 +2,7 @@
 <div class="d-flex justify-content-center ">
     <div class=" col-9  col-md-6 col-lg-6 col-xl-9 col-xxl-8">
     <div class="container container-outlined d-flex justify-content-start mb-5 ">
-      <div class="wrapper pe-5 pb-3 ">
+      <div class="wrapper pt-1 pe-5 pb-3 ">
         <div class="row d-flex">
           <div class="col-3">
             <img

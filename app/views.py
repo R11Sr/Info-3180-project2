@@ -4,10 +4,20 @@ Jinja2 Documentation:    https://jinja.palletsprojects.com/
 Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
+from datetime import date,datetime
+from unittest import result
 
-from app import app
-from flask import render_template, request, jsonify, send_file
+from app import app, db
+from flask import render_template, request, jsonify, send_file,flash,url_for,redirect,g
+from flask_login import current_user, login_user,login_required, logout_user
 import os
+from app.forms import *
+from app.models import *
+from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
+from flask_wtf.csrf import generate_csrf
+
+
 
 
 ###
@@ -17,6 +27,323 @@ import os
 @app.route('/')
 def index():
     return jsonify(message="This is the beginning of our API")
+
+@app.route('/api/register', methods = ['POST'])
+def register():    
+    form= RegisterForm()
+    if request.method=='POST':
+        if form.validate_on_submit():
+            username= form.username.data
+            password= form.password.data
+            fullname= form.fullname.data
+            email= form.email.data
+            location = form.location.data
+            biography= form.biography.data
+            photo = form.photo.data
+            filename= secure_filename(photo.filename)
+
+            # if Users.query.filter(email==email).first() is not None or Users.query.filter(username==username) is not None:
+            #     return jsonify({"result": "User already has an account"}),400
+            if db.session.query(Users.id).filter(Users.email==email).first() is not None or  db.session.query(Users.id).filter(Users.username==username).first() is not None:
+                return jsonify({"result": "User already has an account"}),400
+            else:
+                photo.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+                # today = date.today().strftime("%B %d, %Y")
+
+                userRecord = Users( 
+                    username=username,
+                    password=password,
+                    fullname=fullname,
+                    email=email,
+                    location = location,
+                    biography = biography,
+                    photo = filename,
+                    date_joined = datetime.now()
+                )
+                db.session.add(userRecord)
+                db.session.commit()
+
+                return jsonify({"result":"Successfully Registered"}),201
+                
+    error={
+            "error": form_errors(form)
+        }
+    return jsonify(error),400
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    if current_user.is_authenticated:
+        return jsonify({"result":"Successful Login"}),200
+
+    form = LoginForm()
+
+    if request.method == "POST" and form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+
+        user = Users.query.filter_by(username=username).first()
+
+        if user is not None:
+            if check_password_hash(user.password,password):
+                login_user(user)
+                return jsonify({"result":"Successful Login"}),200
+                
+            else:
+                return jsonify({"result":"Login unsuccessful. Check credentials"}),401
+        
+    else:
+        error={
+            "error": form_errors(form)
+        }
+        return jsonify(error),400
+            
+            
+@app.route('/api/auth/logout', methods=['POST'])
+@login_required 
+def logout():
+    logout_user()
+    return jsonify({"result": "Logged out seccessfully"}),200
+
+
+#@app.route('/api/cars', methods=['GET'])
+#@login_required
+#def cars():
+#    cars= Cars.query.all()
+#    return cars
+
+@app.route('/api/cars', methods=['POST','GET'])
+@login_required
+def cars():
+    form= AddNewCarForm()
+    if request.method=="POST":
+        if form.validate_on_submit():
+            make= form.make.data
+            model= form.model.data
+            color= form.color.data
+            year= form.year.data
+            price= form.price.data
+            car_type= form.Car_Type.data
+            transmission= form.transmission.data
+            description=form.description.data
+            photo= form.photo.data
+            filename= secure_filename(photo.filename)
+
+            photo.save(os.path.join(app.config["UPLOAD_FOLDER", filename]))
+
+            car= Cars(
+                description=description,
+                make=make,
+                model= model,
+                color=color,
+                year=year,
+                transmission=transmission,
+                car_type=car_type,
+                price= price,
+                photo= filename,
+                user_id= current_user.get_id()
+                #ADD USER ID
+            )
+
+            db.session.add(car)
+            db.session.commit()
+            
+            #should we send over user id?
+            data={
+                "message": "Car successfully added",
+                "description": description,
+                "make":make,
+                "model": model,
+                "color": color,
+                "year":year,
+                "transmission":transmission,
+                "car_type":car_type,
+                "price":price,
+                "filename": filename
+            }
+            return jsonify(data),200
+
+        else:
+            error={
+                "error": form_errors(form)
+            }
+            return jsonify(error),400
+
+    elif request.method=="GET":
+        car_list=[]
+        cars= Cars.query.all()
+        if len(cars)!=0:
+            for car in cars:
+                result = {"id": car.id, 
+                    "description": car.description, 
+                    "year": car.year,
+                    "make": car.make,
+                    "mode": car.model,
+                    "colour": car.colour,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo, 
+                    "user_id": car.user_id  
+                }
+                car_list.append(result)
+
+            return jsonify({"result":car_list}),200
+        else:
+            jsonify({"result": "No cars available"}),404
+
+
+@app.route('/api/cars/<car_id>', methods=['GET'])
+@login_required
+def carsSpecific(car_id):
+    car = Cars.query.filter_by(id=car_id).first()
+    if car is not None:
+        result={
+        "id": car.id, 
+        "description":car.description, 
+        "make":car.make, 
+        "model":car.model,
+        "colour": car.colour, 
+        "year": car.year, 
+        "transmission":car.transmission, 
+        "car_type": car.car_type, 
+        "price":car.price, 
+        "photo":car.photo, 
+        "user_id":car.user_id}
+
+        return jsonify(result),200
+    else:
+        return jsonify({"result": "Car not found"}),404
+
+@app.route('/api/cars/<car_id>/favourite', methods=['POST'])
+@login_required
+def carsFavorite(car_id):
+    car= Cars.query.filter_by(id=car_id).first()
+    if car is not None:
+        info= Favourites(
+            car_id= car_id,
+            user_id= current_user.get_id() 
+        )
+        db.session.add(info)
+        db.session.commit()
+        return jsonify({"result": "Favorite car added"}),200
+    else: 
+        return jsonify({"result": "Car not found"}),404
+
+@app.route('/api/search', methods=['GET'])
+@login_required
+def search():
+    form= ExploreForm()
+    if request.method=="GET":
+        make= form.make.data
+        model=form.model.data
+
+
+        #Query based on make 
+        if make is not None and model is None:
+            cars= Cars.query.filter(make==make).all()
+            return jsonify({"result":ReturnCars(cars)}),200
+
+        #Query based on model
+        elif model is not None and make is None:
+            cars= Cars.query.filter(model==model).all()
+            return jsonify({"result":ReturnCars(cars)}),200
+
+
+
+        #Query based on model and make
+        elif model is not None and make is not None:
+            cars= Cars.query.filter(make==make).filter(model==model).all()
+            return jsonify({"result":ReturnCars(cars)}),200
+
+        else:
+            return jsonify({"result": "Make or Model not found" }),404
+
+#HELPER FUNCTION FOR SEARCH
+def ReturnCars(cars):
+    car_list=[]
+    for car in cars:
+            result = {
+                "id": car.id, 
+                "description": car.description, 
+                "year": car.year,
+                "make": car.make,
+                "mode": car.model,
+                "colour": car.colour,
+                "transmission": car.transmission,
+                "car_type": car.car_type,
+                "price": car.price,
+                "photo": car.photo, 
+                "user_id": car.user_id  
+            }
+
+            car_list.append(result)
+    return car_list
+
+
+
+    
+
+@app.route('/api/users/<user_id>', methods=['GET'])
+@login_required
+def user(user_id):
+    user= Users.query.filter(id=user_id).first()
+    if user is not None:
+        result={
+            "id": user.id,
+            "username": user.username,
+            "fullname":user.fullname,
+            "email":user.email,
+            "location": user.location,
+            "biography": user.biography,
+            "photo": user.photo,
+            "data_joined": user.date_joined
+        }
+        return jsonify(result),200
+    else:
+        return jsonify({"result":"User not found"}),404
+
+@app.route('/api/users/<user_id>/favorites', methods=['GET'])
+@login_required
+def userFavoritse(user_id):
+    favs =[]
+    favourites = Favourites.query.filter_by(user_id = user_id).all()
+    if favourites is not None:
+        for fav in favourites:
+            car_id = fav.car_id
+            car = Cars.query.filter_by(id = car_id).first()
+
+            result = {"id": car.id, 
+                "description": car.description, 
+                "year": car.year,
+                "make": car.make,
+                "mode": car.model,
+                "colour": car.colour,
+                "transmission": car.transmission,
+                "car_type": car.car_type,
+                "price": car.price,
+                "photo": car.photo, 
+                "user_id": car.user_id  
+            }
+
+            favs.append(result)
+
+        return jsonify({'result': favs}),200
+    else:
+        return jsonify({"error": 'No favorites found'}), 404
+
+@app.route('/api/csrf-token', methods=['GET'])
+def get_csrf():
+    return jsonify({'csrf_token': generate_csrf()})
+    
+
+
+
+
+
+
+
+
+
 
 
 ###
