@@ -35,8 +35,10 @@
         </div>
 
     </div>
-    <div class = "card-footer">
+    <div class = "button-end">
+    
     <a href="#" class="btn btn-primary">Contact Owner</a>
+    <i></i>
     </div>
         
     </div>
@@ -47,6 +49,12 @@
 </template>
 <script>
 const API = 'http://localhost:8080/api/uploads/';
+  let fav = document.getElementsByTagName("i")[0]
+
+  fav.addEventListener('click', function handleClick(event) {
+    event.target.classList.add('press');
+});
+
 
   
 export default {
@@ -60,6 +68,9 @@ export default {
       };
     },
     created(){
+            fav.addEventListener('click', function handleClick(event) {
+            event.target.classList.add('press');
+            });
             let self = this;
             this.getCsrfToken();
             let id = this.$route.params.id
@@ -155,5 +166,35 @@ main{
 .info{
   margin-bottom: 10%;
 }
+
+i {
+  cursor:pointer;
+  padding:10px 12px 8px;
+  background:#fff;
+  border-radius:50%;
+  display:inline-block;
+  margin:0 0 15px;
+  color:#aaa;
+  transition:.2s;
+  margin-top: 1rem;
+}
+
+i:hover {
+  color:#666;
+}
+
+i:before {
+  font-family:fontawesome;
+  content:'\f004';
+  font-style:normal;
+}
+
+
+
+i.press {
+  animation: size .4s;
+  color:#e23b3b;
+}
+
 
 </style>
