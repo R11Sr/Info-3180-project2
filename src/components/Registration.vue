@@ -1,32 +1,32 @@
 <template>
     <div class="card" style="width: fit-content;">
         <div class="card-body">
-            <form method="POST" enctype="multipart/form-data" id="registerForm" @submit.prevent="register" >
+            <form id = "regForm" method = 'POST' @submit.prevent="registrationForm" enctype="multipart/form-data">
                 <div class = "sector">
                     <div class = "data">
                     <label for = "username">Username</label>
-                    <input type = "text" name = "username">
+                    <input type = "text" name = "username" id = "username">
                     </div>
                     <div class = "data">
                     <label for = "password" >Password</label>   
-                    <input type = "password" name = "password">
+                    <input type = "password" name = "password" id = "password">
                     </div>
                 </div>
                 <div class = "sector">
                     <div class = "data">
                     <label for = "fullname">Fullname</label>
-                    <input type = "text" name = "fullname">
+                    <input type = "text" name = "fullname" id = "fullname" >
                     </div>
                     <div class = "data">
                     <label for = "email" >Email</label>   
-                    <input type = "email" name = "email">
+                    <input type = "email" name = "email" id = "email">
                     </div>
                 </div>
 
                 <div class = "sector">
                     <div class = "data">
                     <label for = "location">Location</label>
-                    <input type = "text" name = "location">
+                    <input type = "text" name = "location" id = "location">
                     </div>
                     <div class = "data">
                     </div>
@@ -34,14 +34,14 @@
                 <div class = "sector">
                     <div class = "data">
                     <label for = "biography">Biography</label>
-                    <textarea name = "biography" rows = "4" cols = "53">
+                    <textarea id = "biography" name = "biography" rows = "4" cols = "53">
                     </textarea>
                     </div>
                 </div>
                 <div class = "sector">
                     <div class = "data">
                         <label for="photo">Image: </label>
-                        <input type="file" id="image" name="photo"><br><br>
+                        <input type="file" id="photo" name="photo"><br><br>
                     </div>
                 </div>
                 <div class = "sector">
@@ -56,48 +56,55 @@
     
 </template>
 <script>
-export default {
-    data() {
+export default{
+   data() {
         return {
-            csrf_token: ''
+            message:'',
+            errors:[],
+            csrf_token:''
         }
     },
-    created(){
-         this.getCsrfToken();
-    },
-    methods:{
-        register(){
-            let registerForm = document.getElementById('registerForm');
-            let formInfo = new FormData(registerForm);
-
-            fetch('/api/register',{
-                method:'POST',
-                body: formInfo,
-                headers:{
-                    'X-CSRFToken': this.csrf_token
-                }
-            }).then((data)=>{
-                return JSON.stringify(data);
+    methods: {
+            
+            registrationForm(){
+            let regForm = document.getElementById('regForm');
+            let form_data = new FormData(regForm);
+            let self = this;
+            fetch("/api/register", {
+            method: 'POST',
+            body:form_data,
+            headers: {'X-CSRFToken': this.csrf_token}
             })
-            .then((data2)=>{
-                console.log(data2);
+            .then(function (response) {
+            return response.json();
             })
-            .catch((error)=>{
-                console.log(error);
+            .then(function (data) {
+            // display a success message
+            console.log(data);
+            self.message = data.message
+            
             })
-
+            .catch(function (error) {
+            console.log(error);
+            self.errors = error
+            
+        });
         },
-        getCsrfToken(){
-            let self =this;
+            
+            getCsrfToken(){
+            let self = this;
             fetch('/api/csrf-token')
-          .then(response=>
-              response.json())          
-          .then(data=>{
+            .then((response) => response.json())
+            .then((data) => {
+            console.log(data);
             self.csrf_token = data.csrf_token;
-          })
+            });
         }
     }
-
+    ,
+        created() {
+            this.getCsrfToken();
+        }
 }
 </script>
 

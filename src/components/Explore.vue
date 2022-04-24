@@ -58,7 +58,7 @@
               </div>
             </h6>
             <p class="card-text text-muted pb-5">{{vehicle.model.replace(/^\w/, (c) => c.toUpperCase())}}</p>
-            <a href="#" class="btn btn-primary">View more details</a>
+            <button @click="getDetails(vehicle.id)" class = "btn btn-primary">View more details</button>
           </div>
         </div>
       </div>
@@ -70,7 +70,9 @@
 <script>
 const API = 'http://localhost:8080/api/uploads/';
 
+
 export default {
+  
   data() {
     return{
       vehicleList:[],
@@ -97,6 +99,7 @@ export default {
         switch (status){
           case 200:
               this.vehicleList = data;
+              
             break;
 
           case 404:
@@ -135,14 +138,18 @@ export default {
 
       })
     },
-        getCsrfToken(){
+    getCsrfToken(){
             fetch('/api/csrf-token')
             .then(response => response.json())
             .then(responseData =>{
                 this.csrf_token = responseData.csrf_token;
             })
 
-        }    
+    },
+    //used to redirect to details page for specific car
+    getDetails(id){
+      this.$router.push('/cars/details/'+id.toString())
+    }    
   }
 }
 </script>

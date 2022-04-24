@@ -41,6 +41,8 @@ def register():
             biography= form.biography.data
             photo = form.photo.data
             filename= secure_filename(photo.filename)
+            
+
 
 
             if db.session.query(Users.id).filter(Users.email==email).first() is not None or  db.session.query(Users.id).filter(Users.username==username).first() is not None:
