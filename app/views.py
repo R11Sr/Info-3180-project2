@@ -104,11 +104,6 @@ def logout():
     return jsonify({"result": "Logged out seccessfully"}),200
 
 
-#@app.route('/api/cars', methods=['GET'])
-#@login_required
-#def cars():
-#    cars= Cars.query.all()
-#    return cars
 
 @app.route('/api/cars', methods=['POST','GET'])
 @login_required
@@ -176,7 +171,7 @@ def cars():
                     "description": car.description, 
                     "year": car.year,
                     "make": car.make,
-                    "mode": car.model,
+                    "model": car.model,
                     "colour": car.colour,
                     "transmission": car.transmission,
                     "car_type": car.car_type,
@@ -231,31 +226,38 @@ def carsFavorite(car_id):
 @app.route('/api/search', methods=['GET'])
 @login_required
 def search():
-    form= ExploreForm()
     if request.method=="GET":
-        make= form.make.data
-        model=form.model.data
+        make= request.args.get('make').strip()
+        model=request.args.get('model').strip()
+
+        print(f"make is:{type(make)}.")
+        print(f"model is:{type(model)}.")
+        
+        print(f"make is:{make}.")
+        print(f"model is:{model}.")
+
 
 
         #Query based on make 
-        if make is not None and model is None:
-            cars= Cars.query.filter(make==make).all()
+        if make and  not model:
+            cars= Cars.query.filter(Cars.make==make.strip().lower()).all()
             return jsonify({"result":ReturnCars(cars)}),200
 
         #Query based on model
-        elif model is not None and make is None:
-            cars= Cars.query.filter(model==model).all()
+        elif model and not make:
+            cars= Cars.query.filter(Cars.model==model.strip().lower()).all()
             return jsonify({"result":ReturnCars(cars)}),200
 
 
 
         #Query based on model and make
-        elif model is not None and make is not None:
-            cars= Cars.query.filter(make==make).filter(model==model).all()
+        elif model and make:
+            cars= Cars.query.filter(Cars.make==make.strip().lower()).filter(Cars.model==model.strip().lower()).all()
             return jsonify({"result":ReturnCars(cars)}),200
 
         else:
-            return jsonify({"result": "Make or Model not found" }),404
+            cars = Cars.query.all()
+            return jsonify({"result":ReturnCars(cars)}),200
 
 #HELPER FUNCTION FOR SEARCH
 def ReturnCars(cars):
@@ -266,7 +268,7 @@ def ReturnCars(cars):
                 "description": car.description, 
                 "year": car.year,
                 "make": car.make,
-                "mode": car.model,
+                "model": car.model,
                 "colour": car.colour,
                 "transmission": car.transmission,
                 "car_type": car.car_type,
