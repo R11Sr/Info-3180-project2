@@ -13,7 +13,7 @@ class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     location = StringField('Location', validators=[DataRequired()])
     biography = TextAreaField("Biography",validators=[DataRequired()])
-    photo = FileField('Upload Photo', validators=[FileRequired(), FileAllowed(['jpg','png'])])
+    photo = FileField('Upload Photo', validators=[FileRequired(), FileAllowed(['jpg','png','jpeg'])])
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -30,7 +30,7 @@ class AddNewCarForm(FlaskForm):
     color = StringField('Colour', validators=[DataRequired()])
     year = StringField('Year', validators=[DataRequired()])
     price = StringField('Price', validators=[DataRequired()])
-    Car_Type = SelectField("Car Type", choices=['SUV'])
-    transmission = SelectField('Transmission', choices=['Automatic'])
+    Car_Type = SelectField("Car Type", choices=['SUV','COUP','HATCH BACK','SEDAN','STATION WAGON'])
+    transmission = SelectField('Transmission', choices=['MANUAL','AUTOMATIC'])
     description = TextAreaField('Description', validators=[DataRequired()])
-    photo = FileField('Upload Photo', validators=[FileRequired(), FileAllowed(['jpg','png'])])
+    photo = FileField('Upload Photo', validators=[FileRequired(), FileAllowed(['jpg','png','jpeg'])])

@@ -6,15 +6,15 @@
         <div class="row d-flex">
           <div class="col-3">
             <img
-              src="@/assets/jessica-felicio-_cvwXhGqG-o-unsplash.jpg"
-              alt=""
+              :src="message.image"
+              :alt="message.fullname"
               id="profilePhoto"
               class="d-inline-block"
             />
           </div>
           <div class="col-9 text-start">
             <div class="container">
-              <h1>{{ message.firstname }} {{ message.lastname }}</h1>
+              <h1>{{ message.fullname }}</h1>
               <h3 class="text-muted pb-3">@{{ message.username }}</h3>
 
               <article class="col-10">
@@ -34,7 +34,7 @@
                   <div class="col userInfo text-start">
                     {{ message.email }} <br />
                     {{ message.location }} <br />
-                    {{ message.Joined }}
+                    {{ message.date_joined }}
                   </div>
                 </div>
               </article>
@@ -73,7 +73,7 @@
       <div class="col">
         <div class="card h-100">
           <img
-            src="http://placehold.jp/150x150.png"
+            src=""
             class="card-img-top"
             alt="place-holder"
           />
@@ -122,22 +122,28 @@
 </template>
 
 <script>
+const API = 'http://localhost:8080/api/uploads/';
 export default {
   data() {
     return {
-      message: {
-        firstname: "Danica",
-        lastname: "Patrick",
-        username: "dparick",
-        biography:
-          "United Auto Sales provides the  fastest, easiest and most user friendly way to buy or sell cars online. Find a great price on the vehicle you want.",
-        email: "email@xampl.com",
-        location: "Wisconsin, USA",
-        Joined: "April 8, 2022",
-        image: "jessica-felicio-_cvwXhGqG-o-unsplash.jpg",
-      },
+      message:{},
     };
   },
+  created(){
+      fetch(`/api/users/${localStorage.getItem('userId')}`,{
+      method:"GET",
+     }).then(response =>{
+        return response.json();
+     }).then(data =>{
+       this.message = data;
+       this.message['image'] = API + this.message.photo;
+     })
+  },
+  methods:{
+    userInfo(){
+
+    }
+  }
 };
 </script>
 

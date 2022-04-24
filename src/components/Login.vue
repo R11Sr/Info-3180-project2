@@ -52,7 +52,7 @@ export default{
     methods:{
         login(){
             let loginForm = document.getElementById('loginForm');
-            console.log(loginForm)
+
             let loginInfo = new FormData(loginForm);
             let notification = document.getElementById('notification');
             let notificationFormError = document.getElementById('notificationFormError');
@@ -72,11 +72,12 @@ export default{
             }).then(async (response) =>{
                 let data = await response.json();
                 let status = response.status;
-                console.log(data,response.status);
 
                 switch(status){
                     case 200:
                         this.notifySuccess = data.result;
+                        //store user_id in localStorage
+                        localStorage.setItem('userId',data.user_id);
                         notification.textContent = this.notifySuccess;
                         notification.style.display = 'block';
                         notification.classList.add('bg-success');
@@ -102,6 +103,10 @@ export default{
 
             .catch((error)=>{
                 console.log(error);
+                this.notifySuccess = error;
+                notification.textContent = this.notifySuccess;
+                notification.style.display = 'block';
+                notification.classList.add('bg-danger');
 
             })
         },

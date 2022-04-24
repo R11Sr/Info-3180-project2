@@ -1,8 +1,17 @@
 <template>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+    integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
   <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">Lab 7</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container-fluid d-flex justify-content-between">
+        <div>
+
+        <a class="navbar-brand" href="/"> <span><i class="fa fa-car" aria-hidden="true"></i></span> Unites Auto Sales</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -14,7 +23,26 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        </div>
+
+        <div>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+          <RouterLink to="/explore" class="nav-link">Explore</RouterLink>
+            </li>
+
+             <li class="nav-item">
+         <RouterLink to="/cars/new" class="nav-link">Add Car</RouterLink>
+            </li>
+            
+
+            <li class="nav-item">
+          <RouterLink to="/user" class="nav-link">My Profile</RouterLink>
+            </li>
+          </ul>
+        </div>
+
+        <div class="collapse " id="navbarSupportedContent" style="">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
               <RouterLink to="/" class="nav-link active">Home</RouterLink>
@@ -31,8 +59,17 @@
 
 <script>
 import { RouterLink } from "vue-router";
+export default{
+  data(){
+    let id = localStorage.getItem('userId');
+  }
+}
 </script>
 
 <style>
 /* Add any component specific styles here */
+#navbarSupportedContent{
+  display: inline-block;
+
+}
 </style>

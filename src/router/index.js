@@ -32,7 +32,7 @@ const router = createRouter({
       component: ExploreView
     },
     {
-      path: '/user', //make u_id dynamic
+      path: '/user/', 
       name: 'user',
       component: UserView
     },
@@ -40,6 +40,11 @@ const router = createRouter({
       path: '/registration',
       name: 'registration',
       component: () => import('../views/RegistrationView.vue')
+    },
+    {
+      path: '/cars/new',
+      name: 'new',
+      component: () =>import('../views/NewPostView.vue')
     }
   ]
 })

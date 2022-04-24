@@ -8,7 +8,7 @@ from datetime import date,datetime
 from unittest import result
 
 from app import app, db, login_manager
-from flask import render_template, request, jsonify, send_file,flash,url_for,redirect,g
+from flask import render_template, send_from_directory, request, jsonify, send_file,flash,url_for,redirect,g
 from flask_login import current_user, login_user,login_required, logout_user
 import os
 from app.forms import *
@@ -42,8 +42,7 @@ def register():
             photo = form.photo.data
             filename= secure_filename(photo.filename)
 
-            # if Users.query.filter(email==email).first() is not None or Users.query.filter(username==username) is not None:
-            #     return jsonify({"result": "User already has an account"}),400
+
             if db.session.query(Users.id).filter(Users.email==email).first() is not None or  db.session.query(Users.id).filter(Users.username==username).first() is not None:
                 return jsonify({"result": "User already has an account"}),400
             else:
@@ -73,7 +72,7 @@ def register():
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     if current_user.is_authenticated:
-        return jsonify({"result":"Successful Login"}),200
+        return jsonify({"result":"Successful Login",'user_id':current_user.get_id()}),200
 
     form = LoginForm()
 
@@ -86,7 +85,7 @@ def login():
         if user is not None:
             if check_password_hash(user.password,password):
                 login_user(user)
-                return jsonify({"result":"Successful Login"}),200
+                return jsonify({"result":"Successful Login",'user_id':user.id}),200
                 
             else:
                 return jsonify({"result":"Login unsuccessful. Check credentials"}),401
@@ -117,33 +116,33 @@ def cars():
     form= AddNewCarForm()
     if request.method=="POST":
         if form.validate_on_submit():
-            make= form.make.data
-            model= form.model.data
-            color= form.color.data
-            year= form.year.data
-            price= form.price.data
+            make= form.make.data.strip().lower()
+            model= form.model.data.strip().lower()
+            color= form.color.data.strip().lower()
+            year= form.year.data.strip()
+            price= form.price.data.strip()
             car_type= form.Car_Type.data
             transmission= form.transmission.data
-            description=form.description.data
+            description=form.description.data.strip().lower()
             photo= form.photo.data
             filename= secure_filename(photo.filename)
 
-            photo.save(os.path.join(app.config["UPLOAD_FOLDER", filename]))
 
             car= Cars(
                 description=description,
                 make=make,
                 model= model,
-                color=color,
+                colour=color,
                 year=year,
                 transmission=transmission,
                 car_type=car_type,
                 price= price,
                 photo= filename,
                 user_id= current_user.get_id()
-                #ADD USER ID
             )
 
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+            
             db.session.add(car)
             db.session.commit()
             
@@ -286,7 +285,7 @@ def ReturnCars(cars):
 @app.route('/api/users/<user_id>', methods=['GET'])
 @login_required
 def user(user_id):
-    user= Users.query.filter(id=user_id).first()
+    user= Users.query.filter(Users.id==user_id).first()
     if user is not None:
         result={
             "id": user.id,
@@ -301,6 +300,13 @@ def user(user_id):
         return jsonify(result),200
     else:
         return jsonify({"result":"User not found"}),404
+
+@app.route('/api/uploads/<filename>')
+def get_image(filename):
+    try:
+        return send_from_directory(os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER']),filename)
+    except FileNotFoundError:
+        return jsonify({"result":"Photo not found"}),404
 
 @app.route('/api/users/<user_id>/favorites', methods=['GET'])
 @login_required
