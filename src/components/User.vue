@@ -45,76 +45,33 @@
     </div>
 
     <!-- Display of  the favorites  -->
-    <div class="container row p-0">
-        <h1>Cars Favourited</h1>
-      <div class="col">
-        <div class="card h-100">
+    <h1>Cars Favourited</h1>
+    <div class="container d-flex flex-wrap row p-0" >
+
+      
+      <div class="col-4 pb-3" v-for="(vehicle,index) in favourite" :key="index">
+        <div class="card h-100" >
           <img
-            src="http://placehold.jp/150x150.png"
-            class="card-img-top"
+            :src="vehicle.image"
+            class="card-img-top "
             alt="place-holder"
-          />
+          /> 
           <div class="card-body">
             <h6 class="card-title d-flex m-0">
-              <div class="me-auto">Card title</div>
+              <div class="me-auto">{{vehicle.year}} {{vehicle.make.replace(/^\w/, (c) => c.toUpperCase())}}</div>
               <div class="">
                 <p class="price">
-                  <span><i class="fa fa-tag" aria-hidden="true"></i> </span>
-                  $400,000
+                  <span><i class="fa fa-tag" aria-hidden="true"></i> </span
+                  >  ${{vehicle.price}}
                 </p>
               </div>
             </h6>
-            <p class="card-text text-muted pb-5">Model</p>
+            <p class="card-text text-muted pb-5">{{vehicle.model.replace(/^\w/, (c) => c.toUpperCase())}}</p>
             <a href="#" class="btn btn-primary">View more details</a>
           </div>
         </div>
       </div>
 
-      <div class="col">
-        <div class="card h-100">
-          <img
-            src=""
-            class="card-img-top"
-            alt="place-holder"
-          />
-          <div class="card-body">
-            <h6 class="card-title d-flex m-0">
-              <div class="me-auto">Card title</div>
-              <div class="">
-                <p class="price">
-                  <span><i class="fa fa-tag" aria-hidden="true"></i> </span>
-                  $400,000
-                </p>
-              </div>
-            </h6>
-            <p class="card-text text-muted pb-5">Model</p>
-            <a href="#" class="btn btn-primary">View more details</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card h-100">
-          <img
-            src="http://placehold.jp/150x150.png"
-            class="card-img-top"
-            alt="place-holder"
-          />
-          <div class="card-body">
-            <h6 class="card-title d-flex m-0 m-0">
-              <div class="me-auto">Card title</div>
-              <div class="">
-                <p class="price">
-                  <span><i class="fa fa-tag" aria-hidden="true"></i> </span>
-                  $400,000
-                </p>
-              </div>
-            </h6>
-            <p class="card-text text-muted pb-5">Model</p>
-            <a href="#" class="btn btn-primary">View more details</a>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -127,10 +84,13 @@ export default {
   data() {
     return {
       message:{},
+      favourite:[]
     };
   },
   created(){
-      fetch(`/api/users/${localStorage.getItem('userId')}`,{
+      let id = localStorage.getItem('userId');
+
+      fetch(`/api/users/${id}`,{
       method:"GET",
      }).then(response =>{
         return response.json();
@@ -138,11 +98,30 @@ export default {
        this.message = data;
        this.message['image'] = API + this.message.photo;
      })
+
+
+     fetch(`/api/users/${id}/favourites`,{
+       method:'GET',
+     }).then(async (response)=>{
+       data = await response.json();
+       let status = response.status;
+       data= data.result;
+       console.log(data);
+
+       switch(status){
+         case 200:
+           this.favourite = data;           
+           break;
+
+          case 404:
+          break;
+
+          default:
+       }
+     })
   },
   methods:{
-    userInfo(){
-
-    }
+   
   }
 };
 </script>

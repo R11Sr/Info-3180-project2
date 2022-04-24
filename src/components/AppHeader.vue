@@ -25,7 +25,8 @@
         </button>
         </div>
 
-        <div>
+         <!-- if there exists an id localStorage meaning user logged in -->
+        <div v-if="id">
           <ul class="navbar-nav">
             <li class="nav-item">
           <RouterLink to="/explore" class="nav-link">Explore</RouterLink>
@@ -43,12 +44,20 @@
         </div>
 
         <div class="collapse " id="navbarSupportedContent" style="">
-          <ul class="navbar-nav me-auto">
+         <!-- if there exists an id localStorage meaning user logged in -->
+
+          <ul v-if="!id" class="navbar-nav me-auto">
             <li class="nav-item">
-              <RouterLink to="/" class="nav-link active">Home</RouterLink>
+              <RouterLink to="/registration" class="nav-link active">Register</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/about">About</RouterLink>
+              <RouterLink class="nav-link" to="/login">Login</RouterLink>
+            </li>
+          </ul>
+          <ul class="navbar-nav me-auto" v-else>
+              <!-- Fix the route here -->
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/">Logout</RouterLink> 
             </li>
           </ul>
         </div>
@@ -61,7 +70,12 @@
 import { RouterLink } from "vue-router";
 export default{
   data(){
-    let id = localStorage.getItem('userId');
+      return {
+         id:''
+      }
+  },
+  created(){
+    this.id = localStorage.getItem('userId');
   }
 }
 </script>
