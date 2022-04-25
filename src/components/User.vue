@@ -67,7 +67,7 @@
               </div>
             </h6>
             <p class="card-text text-muted pb-5">{{vehicle.model.replace(/^\w/, (c) => c.toUpperCase())}}</p>
-            <a href="#" class="btn btn-primary">View more details</a>
+            <a href="#" @click="getDetails(vehicle.id)" class="btn btn-primary">View more details</a>
           </div>
         </div>
       </div>
@@ -103,13 +103,17 @@ export default {
      fetch(`/api/users/${id}/favourites`,{
        method:'GET',
      }).then(async (response)=>{
-       data = await response.json();
+       let data = await response.json();
        let status = response.status;
        data= data.result;
        console.log(data);
 
        switch(status){
          case 200:
+            data.forEach(veh =>{
+            veh['image'] = API + veh.photo;
+            });
+
            this.favourite = data;           
            break;
 
@@ -121,7 +125,9 @@ export default {
      })
   },
   methods:{
-   
+       getDetails(id){
+      this.$router.push('/cars/details/'+id.toString())
+       },
   }
 };
 </script>

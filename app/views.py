@@ -97,7 +97,7 @@ def login():
         return jsonify(error),400
             
             
-@app.route('/api/auth/logout', methods=['POST'])
+@app.route('/api/auth/logout', methods=['GET'])
 @login_required 
 def logout():
     logout_user()
@@ -211,6 +211,8 @@ def carsSpecific(car_id):
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
 @login_required
 def carsFavorite(car_id):
+   
+    
     car= Cars.query.filter_by(id=car_id).first()
     if car is not None:
         info= Favourites(
@@ -310,11 +312,11 @@ def get_image(filename):
     except FileNotFoundError:
         return jsonify({"result":"Photo not found"}),404
 
-@app.route('/api/users/<user_id>/favorites', methods=['GET'])
+@app.route('/api/users/<user_id>/favourites', methods=['GET'])
 @login_required
 def userFavoritse(user_id):
     favs =[]
-    favourites = Favourites.query.filter_by(user_id = user_id).all()
+    favourites = Favourites.query.filter(Favourites.user_id == user_id).all()
     if favourites is not None:
         for fav in favourites:
             car_id = fav.car_id
@@ -324,7 +326,7 @@ def userFavoritse(user_id):
                 "description": car.description, 
                 "year": car.year,
                 "make": car.make,
-                "mode": car.model,
+                "model": car.model,
                 "colour": car.colour,
                 "transmission": car.transmission,
                 "car_type": car.car_type,

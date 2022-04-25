@@ -27,6 +27,11 @@ const router = createRouter({
       component: LoginView
     },
     {
+      path: '/logout',
+      name: 'logout',
+      component: () =>import('../views/LogoutView.vue')
+    },
+    {
       path: '/explore',
       name: 'explore',
       component: ExploreView
@@ -45,6 +50,11 @@ const router = createRouter({
       path: '/cars/new',
       name: 'new',
       component: () =>import('../views/NewPostView.vue')
+    },
+    {
+      path: '/cars/details/:id',
+      name: 'details',
+      component: () =>import('../views/DetailsView.vue')
     }
   ]
 })
