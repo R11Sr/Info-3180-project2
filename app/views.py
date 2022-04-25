@@ -6,9 +6,9 @@ This file creates your application.
 """
 from datetime import date,datetime
 from unittest import result
-
+import os
 from app import app, db, login_manager
-from flask import render_template, send_from_directory, request, jsonify, send_file,flash,url_for,redirect,g
+from flask import render_template, send_from_directory, request, jsonify, send_file,flash,url_for,redirect,send_file
 from flask_login import current_user, login_user,login_required, logout_user
 import os
 from app.forms import *
@@ -26,7 +26,7 @@ from flask_wtf.csrf import generate_csrf
 
 @app.route('/')
 def index():
-    return jsonify(message="This is the beginning of our API")
+    return send_file(os.path.join('../dist/', 'index.html'))
 
 @app.route('/api/register', methods = ['POST'])
 def register():    
